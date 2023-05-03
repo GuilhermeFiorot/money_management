@@ -13,6 +13,14 @@ class Users(Base):
     password = Column(String, nullable=False)
     bill_id = relationship("Bills")
 
+    def __rep__(self):
+        return f"User [name={self.name}]"
 
-def __rep__(self):
-    return f"User [name={self.name}]"
+    def __eq__(self, other):
+        if (
+            self.id == other.id
+            and self.name == other.name
+            and self.password == other.password
+        ):
+            return True
+        return False

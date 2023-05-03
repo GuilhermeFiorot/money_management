@@ -23,6 +23,16 @@ class Bills(Base):
     end_date = Column(Date)
     user_id = Column(Integer, ForeignKey("users.id"))
 
+    def __rep__(self):
+        return f"Bill [name={self.name},description={self.description},end_date={self.end_date},user_id={self.user_id}]"
 
-def __rep__(self):
-    return f"Pet [name={self.name},description={self.description},end_date={self.end_date},user_id={self.user_id}]"
+    def __eq__(self, other):
+        if (
+            self.id == other.id
+            and self.name == other.name
+            and self.description == other.description
+            and self.end_date == other.end_date
+            and self.user_id == other.user_id
+        ):
+            return True
+        return False
