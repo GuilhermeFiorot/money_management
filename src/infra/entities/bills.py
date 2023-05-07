@@ -6,10 +6,10 @@ from src.infra.config import Base
 class BillTypes(enum.Enum):
     """Defining Bills Types"""
 
-    rent = "Rent"
-    utilities = "Utilities"
-    food = "Food"
-    creditCard = "Credit Card"
+    rent = "rent"
+    utilities = "utilities"
+    food = "food"
+    creditCard = "credit card"
 
 
 class Bills(Base):
