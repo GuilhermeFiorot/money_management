@@ -2,6 +2,7 @@
 from src.domain.models import Bills
 from src.infra.config import DBConnectionHandler
 from src.infra.entities import Bills as BillsModel
+from typing import List
 
 
 class BillRepository:
@@ -20,7 +21,7 @@ class BillRepository:
         :return - tuple with new bill inserted
         """
 
-        with DBConnectionHandler() as db_conn:
+        with DBConnectionHandler() as db_connection:
             try:
                 new_bill = BillsModel(
                     name=name,
@@ -28,8 +29,8 @@ class BillRepository:
                     end_date=end_date,
                     user_id=user_id,
                 )
-                db_conn.session.add(new_bill)
-                db_conn.session.commit()
+                db_connection.session.add(new_bill)
+                db_connection.session.commit()
                 return Bills(
                     id=new_bill.id,
                     name=new_bill.name,
@@ -38,8 +39,48 @@ class BillRepository:
                     user_id=new_bill.user_id,
                 )
             except:
-                db_conn.session.rollback()
+                db_connection.session.rollback()
                 raise
             finally:
-                db_conn.session.close()
+                db_connection.session.close()
+        return None
+
+    @classmethod
+    def select_bill(cls, bill_id: int = None, user_id: int = None) -> List[Bills]:
+        """
+        Select data in PetsEntity entity by id and/or user_id
+        :param - bill_id : id of the bill
+               - user_id : id of the user owner
+        :return - List of Bills selected
+        """
+        with DBConnectionHandler() as db_connection:
+            try:
+                query_data = None
+                if bill_id and not user_id:
+                    data = (
+                        db_connection.session.query(BillsModel)
+                        .filter_by(id=bill_id)
+                        .one()
+                    )
+                    query_data = [data]
+                if not bill_id and user_id:
+                    data = (
+                        db_connection.session.query(BillsModel)
+                        .filter_by(user_id=user_id)
+                        .all()
+                    )
+                    query_data = data
+                if bill_id and user_id:
+                    data = (
+                        db_connection.session.query(BillsModel)
+                        .filter_by(id=bill_id, user_id=user_id)
+                        .one()
+                    )
+                    query_data = [data]
+                return query_data
+            except:
+                db_connection.session.rollback()
+                raise
+            finally:
+                db_connection.session.close()
         return None
